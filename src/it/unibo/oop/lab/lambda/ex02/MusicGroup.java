@@ -63,7 +63,7 @@ public interface MusicGroup {
      *            the album name
      * @return average track length for the album
      */
-    OptionalDouble averageDurationOfSongs(String albumName);
+    Optional<Double> averageDurationOfSongs(String albumName);
 
     /**
      * @return the longest song

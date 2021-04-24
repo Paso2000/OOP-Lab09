@@ -6,7 +6,10 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.LayoutManager;
 import java.awt.Toolkit;
+import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.Arrays;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -31,12 +34,22 @@ import javax.swing.JTextArea;
  *
  */
 public final class LambdaFilter extends JFrame {
-
+	 private static final String ANY_NON_WORD = "(\\s|\\p{Punct})+";
     private static final long serialVersionUID = 1760990730218643730L;
 
     private enum Command {
-        IDENTITY("No modifications", Function.identity());
-
+        IDENTITY("No modifications", Function.identity()),
+    	TO_LOWER("lowercase",String::toLowerCase),
+    	CHAR_COUNTER("char_counter", s-> Integer.toString(s.length())),
+    	LINES_COUNTER("line_counter",s-> Long.toString(s.chars().filter(e-> e=='\n').count() +1)),
+    	SORTED("sort", s-> 
+    					Arrays.stream(s.split(ANY_NON_WORD))
+    					.sorted()
+    					.collect(Collectors.joining("\n"))),
+    	COUNTER("counter",s-> Arrays.stream(s.split(ANY_NON_WORD))
+    			.collect(Collectors.groupingBy(Function.identity(),Collectors.counting())).entrySet()
+    			.stream().map(e-> e.getKey()+"->"+e.getValue()).collect(Collectors.joining("\n")));
+    	
         private final String commandName;
         private final Function<String, String> fun;
 
@@ -53,6 +66,10 @@ public final class LambdaFilter extends JFrame {
         public String translate(final String s) {
             return fun.apply(s);
         }
+      
+        	
+        
+         
     }
 
     private LambdaFilter() {
